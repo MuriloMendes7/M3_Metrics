@@ -6,6 +6,13 @@ export function Modal({ isOpen, onClose, title, children }) {
   const dialogRef = useRef(null);
 
   useEffect(() => {
+    if (isOpen) {
+      dialogRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  // 2. Controla o evento da tecla Escape
+  useEffect(() => {
     if (!isOpen) return;
 
     function handleKeyDown(event) {
@@ -15,8 +22,7 @@ export function Modal({ isOpen, onClose, title, children }) {
     }
 
     document.addEventListener('keydown', handleKeyDown);
-    dialogRef.current?.focus();
-
+    
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
