@@ -27,10 +27,22 @@ export function WorkoutDayColumn({ day, exercises, onAddClick, onUpdateExercise,
     setDraggedIndex(null);
   }
 
+  function handleMoveUp(exerciseId) {
+    const index = exercises.findIndex((ex) => ex.id === exerciseId);
+    if (index <= 0) return;
+    onReorderExercises(day.id, index, index - 1);
+  }
+
+  function handleMoveDown(exerciseId) {
+    const index = exercises.findIndex((ex) => ex.id === exerciseId);
+    if (index === -1 || index >= exercises.length - 1) return;
+    onReorderExercises(day.id, index, index + 1);
+  }
+
   return (
     <section
       aria-labelledby={`day-heading-${day.id}`}
-      className="flex w-full flex-shrink-0 flex-col rounded-xl border border-slate-200 bg-slate-50 sm:w-80"
+      className="flex w-[88vw] max-w-sm flex-shrink-0 snap-center flex-col rounded-xl border border-slate-200 bg-slate-50 sm:w-80 sm:max-w-none sm:snap-none"
     >
       <header className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h3 id={`day-heading-${day.id}`} className="font-semibold text-slate-800">
@@ -50,8 +62,12 @@ export function WorkoutDayColumn({ day, exercises, onAddClick, onUpdateExercise,
               key={exercise.id}
               exercise={exercise}
               index={index}
+              isFirst={index === 0}
+              isLast={index === exercises.length - 1}
               onUpdate={(id, updated) => onUpdateExercise(day.id, id, updated)}
               onRemove={(id) => onRemoveExercise(day.id, id)}
+              onMoveUp={handleMoveUp}
+              onMoveDown={handleMoveDown}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDrop={handleDrop}

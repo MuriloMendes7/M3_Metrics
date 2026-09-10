@@ -91,7 +91,8 @@ export function WorkoutBuilder() {
         </div>
       </header>
 
-      <div className="flex gap-4 overflow-x-auto pb-4" role="group" aria-label="Dias de treino da semana">
+    
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory sm:snap-none" role="group" aria-label="Dias de treino da semana">
         {INITIAL_DAYS.map((day) => (
           <WorkoutDayColumn
             key={day.id}

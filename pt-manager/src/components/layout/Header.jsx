@@ -1,7 +1,17 @@
 // src/components/layout/Header.jsx
-import { Menu, Bell, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, Bell, LogOut, ChevronDown } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
-export function Header({ onMenuClick, trainerName = 'Treinador' }) {
+export function Header({ onMenuClick }) {
+  const { trainer, logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/login', { replace: true });
+  }
+
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
       <div className="flex items-center gap-3">
@@ -26,16 +36,20 @@ export function Header({ onMenuClick, trainerName = 'Treinador' }) {
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
         </button>
 
+        <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
+            {(trainer?.name || 'T').charAt(0).toUpperCase()}
+          </span>
+          <span className="hidden text-sm font-medium text-slate-700 sm:inline">{trainer?.name}</span>
+        </div>
+
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100"
-          aria-label={`Menu do usuário: ${trainerName}`}
+          onClick={handleLogout}
+          aria-label="Sair da conta"
+          className="rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
-            {trainerName.charAt(0).toUpperCase()}
-          </span>
-          <span className="hidden text-sm font-medium text-slate-700 sm:inline">{trainerName}</span>
-          <ChevronDown size={16} className="hidden text-slate-400 sm:inline" aria-hidden="true" />
+          <LogOut size={18} aria-hidden="true" />
         </button>
       </div>
     </header>

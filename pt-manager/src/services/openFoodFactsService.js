@@ -1,7 +1,8 @@
 // src/services/openFoodFactsService.js
-const BASE_URL = 'https://br.openfoodfacts.org/cgi/search.pl';
+// src/services/openFoodFactsService.js
+const BASE_URL = 'https://world.openfoodfacts.org/cgi/search.pl';
 
-export async function searchFoods(query, { pageSize = 20 } = {}) {
+export async function searchFoods(query, { pageSize = 20, signal } = {}) {
   if (!query || query.trim().length < 2) {
     return [];
   }
@@ -14,7 +15,23 @@ export async function searchFoods(query, { pageSize = 20 } = {}) {
     page_size: String(pageSize),
   });
 
-  const response = await fetch(`${BASE_URL}?${params.toString()}`);
+  let response;
+  try {
+    response = await fetch(`${BASE_URL}?${params.toString()}`, {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+  } catch (networkError) {
+    if (networkError.name === 'AbortError') {
+      throw networkError;
+    }
+    throw new Error(
+      'Não foi possível conectar à base de alimentos. Verifique sua conexão com a internet e tente novamente.'
+    );
+  }
 
   if (!response.ok) {
     throw new Error(`Open Food Facts respondeu com status ${response.status}`);
@@ -23,7 +40,7 @@ export async function searchFoods(query, { pageSize = 20 } = {}) {
   const data = await response.json();
 
   if (!data || !Array.isArray(data.products)) {
-    throw new Error('Formato de resposta inesperado da API Open Food Facts');
+    throw new Error('Formato de resposta inesperado da API Open Food Facts.');
   }
 
   return data.products
