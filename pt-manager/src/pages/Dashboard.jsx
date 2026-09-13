@@ -1,5 +1,20 @@
 // src/pages/Dashboard.jsx
+import { useMemo } from 'react';
 import { Users, Dumbbell, TrendingUp } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from 'recharts';
+import { MOCK_STUDENTS } from '../data/mockStudents';
 
 const STATS = [
   { label: 'Alunos Ativos', value: '24', icon: Users },
@@ -7,7 +22,28 @@ const STATS = [
   { label: 'Evolução Média', value: '+12%', icon: TrendingUp },
 ];
 
+const STATUS_COLORS = {
+  Ativo: '#10b981',
+  Pausado: '#f59e0b',
+};
+
 export function Dashboard() {
+  const goalDistribution = useMemo(() => {
+    const counts = MOCK_STUDENTS.reduce((acc, student) => {
+      acc[student.goal] = (acc[student.goal] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(counts).map(([goal, total]) => ({ goal, total }));
+  }, []);
+
+  const statusDistribution = useMemo(() => {
+    const counts = MOCK_STUDENTS.reduce((acc, student) => {
+      acc[student.status] = (acc[student.status] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(counts).map(([status, total]) => ({ status, total }));
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       <header>
@@ -27,6 +63,101 @@ export function Dashboard() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <figure className="rounded-xl border border-slate-200 bg-white p-5">
+          <figcaption className="mb-4 text-sm font-semibold text-slate-800">Alunos por Objetivo</figcaption>
+
+          <div
+            role="img"
+            aria-label={`Gráfico de barras: ${goalDistribution
+              .map((g) => `${g.goal}, ${g.total} aluno${g.total === 1 ? '' : 's'}`)
+              .join('; ')}`}
+          >
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={goalDistribution} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <XAxis
+                  dataKey="goal"
+                  tick={{ fill: '#64748b', fontSize: 12 }}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tickLine={false}
+                  interval={0}
+                  angle={-10}
+                  textAnchor="end"
+                  height={50}
+                />
+                <YAxis allowDecimals={false} tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0', fontSize: 13 }} />
+                <Bar dataKey="total" name="Alunos" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={48} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <table className="sr-only">
+            <caption>Quantidade de alunos por objetivo</caption>
+            <thead>
+              <tr>
+                <th scope="col">Objetivo</th>
+                <th scope="col">Alunos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {goalDistribution.map((row) => (
+                <tr key={row.goal}>
+                  <td>{row.goal}</td>
+                  <td>{row.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </figure>
+
+        <figure className="rounded-xl border border-slate-200 bg-white p-5">
+          <figcaption className="mb-4 text-sm font-semibold text-slate-800">Alunos por Status</figcaption>
+
+          <div
+            role="img"
+            aria-label={`Gráfico de pizza: ${statusDistribution
+              .map((s) => `${s.status}, ${s.total} aluno${s.total === 1 ? '' : 's'}`)
+              .join('; ')}`}
+          >
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={statusDistribution} dataKey="total" nameKey="status" innerRadius={60} outerRadius={90} paddingAngle={3}>
+                  {statusDistribution.map((entry) => (
+                    <Cell key={entry.status} fill={STATUS_COLORS[entry.status] || '#94a3b8'} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0', fontSize: 13 }} />
+                <Legend
+                  verticalAlign="bottom"
+                  height={32}
+                  formatter={(value) => <span className="text-xs text-slate-600">{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <table className="sr-only">
+            <caption>Quantidade de alunos por status</caption>
+            <thead>
+              <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Alunos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {statusDistribution.map((row) => (
+                <tr key={row.status}>
+                  <td>{row.status}</td>
+                  <td>{row.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </figure>
       </section>
     </div>
   );

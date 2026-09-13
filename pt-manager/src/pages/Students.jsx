@@ -1,12 +1,7 @@
 // src/pages/Students.jsx
 import { useState } from 'react';
 import { Search, UserPlus } from 'lucide-react';
-
-const MOCK_STUDENTS = [
-  { id: 1, name: 'Ana Souza', goal: 'Hipertrofia', status: 'Ativo' },
-  { id: 2, name: 'Bruno Lima', goal: 'Emagrecimento', status: 'Ativo' },
-  { id: 3, name: 'Carla Dias', goal: 'Recomposição Corporal', status: 'Pausado' },
-];
+import { MOCK_STUDENTS } from '../data/mockStudents';
 
 export function Students() {
   const [searchTerm, setSearchTerm] = useState('');
