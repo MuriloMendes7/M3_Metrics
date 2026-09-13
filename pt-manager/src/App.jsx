@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -12,6 +11,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Students } from './pages/Students';
 import { WorkoutBuilder } from './pages/WorkoutBuilder';
 import { Diet } from './pages/Diet';
+import { TrainerProfile } from './pages/TrainerProfile';
 
 const MIN_SPLASH_DURATION_MS = 700;
 
@@ -46,6 +46,7 @@ function AppRoutes() {
         <Route path="/alunos" element={<Students />} />
         <Route path="/treinos" element={<WorkoutBuilder />} />
         <Route path="/dieta" element={<Diet />} />
+        <Route path="/perfil" element={<TrainerProfile />} />
       </Route>
     </Routes>
   );

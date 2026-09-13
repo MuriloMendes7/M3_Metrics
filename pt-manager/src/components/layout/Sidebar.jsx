@@ -1,12 +1,13 @@
 // src/components/layout/Sidebar.jsx
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Dumbbell, Apple, Activity } from 'lucide-react';
+import { LayoutDashboard, Users, Dumbbell, Apple, Activity, UserCog } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/alunos', label: 'Alunos', icon: Users },
   { to: '/treinos', label: 'Treinos', icon: Dumbbell },
   { to: '/dieta', label: 'Dieta', icon: Apple },
+  { to: '/perfil', label: 'Meu Perfil', icon: UserCog },
 ];
 
 export function Sidebar({ isOpen, onClose }) {

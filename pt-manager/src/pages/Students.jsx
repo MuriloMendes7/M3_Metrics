@@ -1,12 +1,17 @@
 // src/pages/Students.jsx
 import { useState } from 'react';
 import { Search, UserPlus } from 'lucide-react';
-import { MOCK_STUDENTS } from '../data/mockStudents';
+import { useStudents } from '../hooks/useStudents';
+import { NewStudentModal } from '../components/students/NewStudentModal';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { EmptyState } from '../components/common/EmptyState';
 
 export function Students() {
+  const { students, status, error, addStudent } = useStudents();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const filteredStudents = MOCK_STUDENTS.filter((student) =>
+  const filteredStudents = students.filter((student) =>
     student.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
@@ -19,6 +24,7 @@ export function Students() {
         </div>
         <button
           type="button"
+          onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
         >
           <UserPlus size={16} aria-hidden="true" />
@@ -43,42 +49,62 @@ export function Students() {
         </div>
       </form>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-        <table className="w-full text-left text-sm">
-          <caption className="sr-only">Lista de alunos cadastrados</caption>
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th scope="col" className="px-4 py-3 font-medium">Nome</th>
-              <th scope="col" className="px-4 py-3 font-medium">Objetivo</th>
-              <th scope="col" className="px-4 py-3 font-medium">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filteredStudents.map((student) => (
-              <tr key={student.id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-slate-800">{student.name}</td>
-                <td className="px-4 py-3 text-slate-600">{student.goal}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      student.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-                    }`}
-                  >
-                    {student.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-            {filteredStudents.length === 0 && (
+      {status === 'loading' && <LoadingSpinner label="Carregando alunos..." />}
+
+      {status === 'error' && (
+        <div role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {status === 'success' && students.length === 0 && (
+        <EmptyState
+          icon={UserPlus}
+          title="Nenhum aluno cadastrado"
+          description="Clique em 'Novo Aluno' para adicionar o primeiro aluno da sua carteira."
+        />
+      )}
+
+      {status === 'success' && students.length > 0 && (
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <table className="w-full text-left text-sm">
+            <caption className="sr-only">Lista de alunos cadastrados</caption>
+            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
-                <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
-                  Nenhum aluno encontrado.
-                </td>
+                <th scope="col" className="px-4 py-3 font-medium">Nome</th>
+                <th scope="col" className="px-4 py-3 font-medium">Objetivo</th>
+                <th scope="col" className="px-4 py-3 font-medium">Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredStudents.map((student) => (
+                <tr key={student.id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-medium text-slate-800">{student.name}</td>
+                  <td className="px-4 py-3 text-slate-600">{student.goal}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        student.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                      }`}
+                    >
+                      {student.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {filteredStudents.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
+                    Nenhum aluno encontrado para "{searchTerm}".
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <NewStudentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreate={addStudent} />
     </div>
   );
 }

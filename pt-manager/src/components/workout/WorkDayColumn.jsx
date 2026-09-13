@@ -42,7 +42,7 @@ export function WorkoutDayColumn({ day, exercises, onAddClick, onUpdateExercise,
   return (
     <section
       aria-labelledby={`day-heading-${day.id}`}
-      className="flex w-[88vw] max-w-sm flex-shrink-0 snap-center flex-col rounded-xl border border-slate-200 bg-slate-50 sm:w-80 sm:max-w-none sm:snap-none"
+      className="flex flex-col rounded-xl border border-slate-200 bg-slate-50"
     >
       <header className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h3 id={`day-heading-${day.id}`} className="font-semibold text-slate-800">

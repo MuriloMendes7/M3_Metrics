@@ -1,10 +1,12 @@
 // src/components/layout/Header.jsx
-import { useNavigate } from 'react-router-dom';
-import { Menu, Bell, LogOut, ChevronDown } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, Bell, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useProfile } from '../../hooks/useProfile';
 
 export function Header({ onMenuClick }) {
   const { trainer, logout } = useAuth();
+  const { profile } = useProfile();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -36,12 +38,25 @@ export function Header({ onMenuClick }) {
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
         </button>
 
-        <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
-            {(trainer?.name || 'T').charAt(0).toUpperCase()}
-          </span>
+        <Link
+          to="/perfil"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100"
+          aria-label={`Ver perfil de ${trainer?.name || 'treinador'}`}
+        >
+          {profile?.avatarDataUrl ? (
+            <img
+              src={profile.avatarDataUrl}
+              alt=""
+              aria-hidden="true"
+              className="h-8 w-8 rounded-full object-cover"
+            />
+          ) : (
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
+              {(trainer?.name || 'T').charAt(0).toUpperCase()}
+            </span>
+          )}
           <span className="hidden text-sm font-medium text-slate-700 sm:inline">{trainer?.name}</span>
-        </div>
+        </Link>
 
         <button
           type="button"
